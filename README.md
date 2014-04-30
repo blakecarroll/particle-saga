@@ -3,6 +3,7 @@ ParticleSaga
 
 A gallery for images and models rendered as particles with three.js
 
+[Demo](http://blakecarroll.github.io/particle-saga/)
 
 ### Dependencies
 
@@ -241,11 +242,11 @@ sort | `Function` | Javascript (a, b) sort method to be applied to each target's
 
 Method | Params | Description
 --- | :---: | ---
-load | Optional:`onAssetsLoad {Function}` | Triggers loading of all targets with optional callback
+load | (optional) <br> `onAssetsLoad {Function}` | Triggers loading of all targets with optional callback
 destroy || Halts all animation and attempts to dump all references (also calls relevant three.js dispose methods on scene children)
-setTarget | `index {Integer}` <br> `animated {Boolean}`(default=`true`) | Morph to the target you supplied at that index
-nextTarget | `animated {Boolean}`(default=`true`) | Morph to next target (wraps around)
-prevTarget | `animated {Boolean}`(default=`true`) | Morph to previous target (wraps around)
+setTarget | `index {Integer}` <br> `animated {Boolean}` (default=`true`) | Morph to the target you supplied at that index
+nextTarget | `animated {Boolean}` (default=`true`) | Morph to next target (wraps around)
+prevTarget | `animated {Boolean}` (default=`true`) | Morph to previous target (wraps around)
 startSlideshow || Start interval going through each target
 stopSlideshow || Stops interval going through each target
 
