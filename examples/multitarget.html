@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ParticleSaga.js | MultiTarget Example</title>
+    <meta name="description" content="A Threejs WebGL particle saga/gallery for models and images">
+    <meta name="keywords" content="particles, webgl, threejs, three.js, javascript">
+    <link href="./css/reset.css" rel="stylesheet" type="text/css">
+    <link href="./css/styles.css" rel="stylesheet" type="text/css">
+  </head>
+
+  <body>
+    <div id="saga">
+      <ul id="multitarget-references">
+        <li id="multitarget-reference-1"></li>
+        <li id="multitarget-reference-2"></li>
+      </ul>
+    </div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r66/three.min.js"></script>
+    <script type="text/javascript" src="../deploy/particlesaga.js"></script>
+    <script type="text/javascript">
+
+      /*
+       * Define a MultiTarget with a model and an image. Note that the
+       * positioning of the targets is done by centering them within the
+       * multitarget-reference elements positioning wth css.
+       */
+      var targets = [
+        {
+          type: ParticleSaga.MultiTarget,
+          container: document.getElementById('multitarget-references'),
+          options: {
+            size: 3,
+            respondsToMouse: true
+          },
+          targets: [
+            {
+              type: ParticleSaga.ModelTarget,
+              url: './models/gryphon.json',
+              container: document.getElementById('multitarget-reference-1'),
+              options: {
+                scale: 60,
+                color: {
+                  r: 0.8,
+                  g: 1,
+                  b: 0.2
+                },
+                initialMatrices: [
+                  new THREE.Matrix4().makeTranslation(0, -2, 0),
+                  new THREE.Matrix4().makeRotationY(Math.PI/2)
+                ]
+              }
+            }, {
+              type: ParticleSaga.ImageTarget,
+              url: './images/griffin.png',
+              container: document.getElementById('multitarget-reference-2')
+            }
+          ]
+        }
+      ];
+
+      // The scene's context element
+      var saga = document.getElementById('saga');
+
+      // Put it all together and we're all set
+      var scene = new ParticleSaga.Scene(saga, targets, {
+        numParticles: 40000
+      });
+      scene.load(function() {
+        scene.setTarget(0);
+      });
+    </script>
+  </body>
+</html>
