@@ -13,53 +13,56 @@ A gallery for images and models rendered as particles with three.js
 
 Download the [minified script](https://github.com/blakecarroll/particle-saga/deploy/particlesaga.min.js) as well as a copy of [three.js](http://threejs.org/build/three.min.js) and include it in your markup.
 
-	<script src="js/three.min.js"></script>
-	<script src="js/particlesaga.min.js"></script>
-
+```html
+<script src="js/three.min.js"></script>
+<script src="js/particlesaga.min.js"></script>
+```
 
 To prepare ParticleSaga scene you'll then need to define a set of targets (images and/or models) to map the particles to.
 
-	var targets = [
-	  {
-		type: ParticleSaga.ImageTarget,
-		url: 'images/excellent.png',
-		options: {
-		  size: 3
-		}
-      }, {
-        type: ParticleSaga.ModelTarget,
-        url: 'models/unicorn.json',
-        options: {
-          color: {
-            r: 0.8,
-            g: 1,
-            b: 1
-          },
-          scale: 1.5,
-          size: 3,
-          respondsToMouse: true
-        }
-      }
-	];
+```javascript
+var targets = [
+  {
+    type: ParticleSaga.ImageTarget,
+    url: 'images/excellent.png',
+    options: {
+      size: 3
+    }
+  }, {
+    type: ParticleSaga.ModelTarget,
+    url: 'models/unicorn.json',
+    options: {
+      color: {
+        r: 0.8,
+        g: 1,
+        b: 1
+      },
+      scale: 1.5,
+      size: 3,
+      respondsToMouse: true
+    }
+  }
+];
+```
 
 Next you just need to instantiate a scene with this target data and then either start a slideshow or control the sequence manually.
 
-	// The scene's context element contains the canvas
-	var saga = document.getElementById('saga');
+```javascript
+// The scene's context element contains the canvas
+var saga = document.getElementById('saga');
 		
-    var scene = new ParticleSaga.Scene(saga, targets, {
-      numParticles: 40000,
-      sort: ParticleSaga.VertexSort.leftToRight,
-      onAssetsLoad: function() {
-        scene.setTarget(0);
-        scene.startSlideshow();
-      }
-    });
+var scene = new ParticleSaga.Scene(saga, targets, {
+  numParticles: 40000,
+  sort: ParticleSaga.VertexSort.leftToRight
+});
     
-    // init will make all targets begin loading assets
-    // and create everything else needed in the scene.      
-    scene.init();
-
+// init will make all targets begin loading assets
+// and create everything else needed in the scene.      
+scene.load(function() {
+  scene.setTarget(0);
+  scene.startSlideshow();
+});
+```
 
 # Particle Targets
 
@@ -74,13 +77,15 @@ For best results you should use a high-contrast image with transparent negative 
 
 Example definition:
 
-	{
-	  type: ParticleSaga.ImageTarget,
-	  url: 'images/excellent.png',
-	  options: {
-	    size: 3
-	  }
-	}
+```javascript
+{
+  type: ParticleSaga.ImageTarget,
+  url: 'images/excellent.png',
+  options: {
+    size: 3
+  }
+}
+```
 
 *Attributes*
 
@@ -105,24 +110,26 @@ ModelTargets load a json mesh file using a [THREE.JSONLoader](http://threejs.org
 
 Example definition:
 
-	{
-      type: ParticleSaga.ModelTarget,
-      url: 'models/unicorn.json',
-      options: {
-        color: {
-          r: 0.8,
-          g: 1,
-          b: 1
-        },
-        initialMatrices: [
-          new THREE.Matrix4().makeTranslation(0, -2, 0),
-          new THREE.Matrix4().makeRotationY(Math.PI/2)
-        ],
-        respondsToMouse: true,
-        scale: 1.5,
-        size: 3
-      }
-    }
+```javascript
+{
+  type: ParticleSaga.ModelTarget,
+  url: 'models/unicorn.json',
+  options: {
+    color: {
+      r: 0.8,
+      g: 1,
+      b: 1
+    },
+    initialMatrices: [
+      new THREE.Matrix4().makeTranslation(0, -2, 0),
+      new THREE.Matrix4().makeRotationY(Math.PI/2)
+    ],
+    respondsToMouse: true,
+    scale: 1.5,
+    size: 3
+  }
+}
+```
 
 *Optimization:* If you inspect the models used in the examples you'll notice that a lot of data have been stripped out since we only really need the vertices here.
 
@@ -151,32 +158,34 @@ MultiTargets can combine a list of other targets into a single geometry to displ
 
 Example definition:
 
-	{
-	  type: ParticleSaga.MultiTarget,
-	  container: document.getElementById('multitarget-references'),
-	  options: {
-	    size: 3
-	  },
-	  targets: [
-	    {
-	      type: ParticleSaga.ModelTarget,
-	      url: 'models/unicorn.json',
-	      container: document.getElementById('unicorn-multitarget-reference'),
-	      options: {
-	        scale: 1.2,
-	        color: {
-	          r: 0.8,
-	          g: 1,
-	          b: 0.2
-	        }
-	      }
-	    }, {
-	      type: ParticleSaga.ImageTarget,
-	      url: 'images/excellent.png',
-	      container: document.getElementById('excellent-multitarget-reference')
-	    }
-	  ]
-	}
+```javascript
+{
+  type: ParticleSaga.MultiTarget,
+  container: document.getElementById('multitarget-references'),
+  options: {
+    size: 3
+  },
+  targets: [
+    {
+      type: ParticleSaga.ModelTarget,
+      url: 'models/unicorn.json',
+      container: document.getElementById('unicorn-multitarget-reference'),
+      options: {
+        scale: 1.2,
+        color: {
+          r: 0.8,
+          g: 1,
+          b: 0.2
+        }
+      }
+    }, {
+      type: ParticleSaga.ImageTarget,
+      url: 'images/excellent.png',
+      container: document.getElementById('excellent-multitarget-reference')
+    }
+  ]
+}
+```
 
 *Optimization:* If you inspect the models used in the examples you'll notice that a lot of data have been stripped out since we only really need the vertices here.
 
@@ -247,9 +256,9 @@ Requires [Grunt](http://gruntjs.com/getting-started) and related dependencies ([
 
 After satisfying those requirements you can install the project-specific dependencies and build as follows:
 
-	cd path/to/particle-saga
-	npm install
-	grunt deploy
+	$ cd path/to/particle-saga
+	$ npm install
+	$ grunt deploy
 
 
 ## Inspiration
