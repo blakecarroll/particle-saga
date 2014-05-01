@@ -24,7 +24,7 @@
     function ModelTarget(targetData, options) {
       this.targetData = targetData;
       this.getParticles = __bind(this.getParticles, this);
-      this.processGeomtry = __bind(this.processGeomtry, this);
+      this.processGeometry = __bind(this.processGeometry, this);
       this.onLoad = __bind(this.onLoad, this);
       this.load = __bind(this.load, this);
       ModelTarget.__super__.constructor.call(this, this.targetData, options);
@@ -42,22 +42,31 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ModelTarget.prototype.load = function(callback) {
-      var loader;
+      var geometry, i, loader, verts, _i, _ref;
       ModelTarget.__super__.load.call(this, callback);
-      loader = new THREE.JSONLoader();
-      return loader.load(this.targetData.url, this.onLoad);
+      if (this.targetData.preloadedVertices != null) {
+        geometry = new THREE.Geometry();
+        verts = this.targetData.preloadedVertices;
+        for (i = _i = 0, _ref = verts.length; _i < _ref; i = _i += 3) {
+          geometry.vertices.push(new THREE.Vector3(verts[i], verts[i + 1], verts[i + 2]));
+        }
+        return this.onLoad(geometry);
+      } else {
+        loader = new THREE.JSONLoader();
+        return loader.load(this.targetData.url, this.onLoad);
+      }
     };
 
     ModelTarget.prototype.onLoad = function(geometry) {
-      this.processGeomtry(geometry);
+      this.processGeometry(geometry);
       return ModelTarget.__super__.onLoad.call(this);
     };
 
-    ModelTarget.prototype.processGeomtry = function(geometry) {
+    ModelTarget.prototype.processGeometry = function(geometry) {
       var material, matrix, vertex, _i, _j, _len, _len1, _ref, _ref1;
       geometry.mergeVertices();
       _ref = geometry.vertices;

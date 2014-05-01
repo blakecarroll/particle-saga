@@ -40,7 +40,7 @@
         revertDuration: 1000,
         sizeAttenuation: true
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ParticlePool.prototype.init = function() {

@@ -242,7 +242,8 @@ sort | `Function` | Javascript (a, b) sort method to be applied to each target's
 
 Method | Params | Description
 --- | :---: | ---
-load | (optional) <br> `onAssetsLoad {Function}` | Triggers loading of all targets with optional callback
+load | (optional) <br> `onAssetsLoad {Function}` | Triggers loading of all initial targets with optional callback
+loadTarget | `target {PlainObject}`, `onLoad {Function}` | Load an individual target with an optional callback. This can also be used to load targets beyond the initial ones
 destroy || Halts all animation and attempts to dump all references (also calls relevant three.js dispose methods on scene children)
 setTarget | `index {Integer}` <br> `animated {Boolean}` (default=`true`) | Morph to the target you supplied at that index
 nextTarget | `animated {Boolean}` (default=`true`) | Morph to next target (wraps around)

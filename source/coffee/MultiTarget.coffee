@@ -24,7 +24,7 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
       respondsToMouse: false
       size: 1.0
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   load: (callback) =>
     super(callback)
@@ -34,8 +34,8 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
       if target.type != ParticleSaga.ModelTarget
         target.options.numParticles = @opts.numParticles
       opts = {}
-      opts.extend @opts
-      opts.extend target.options
+      ParticleSaga.Utils.extend opts, @opts
+      ParticleSaga.Utils.extend opts, target.options
       @targets.push new target.type target, opts
       @targets[i].init()
       @targets[i].load(@onTargetLoad)

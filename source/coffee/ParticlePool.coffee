@@ -23,7 +23,7 @@ class ParticleSaga.ParticlePool
       particleRevertDelay: 0.008
       revertDuration: 1000
       sizeAttenuation: true
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   init: ->
     @createParticles()

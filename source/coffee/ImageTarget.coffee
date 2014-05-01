@@ -27,7 +27,7 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
       respondsToMouse: false
       size: 1.0
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   init: =>
     @resize()

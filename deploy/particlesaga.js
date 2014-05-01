@@ -1,17 +1,28 @@
 (function() {
   var __slice = [].slice;
 
-  Object.prototype.extend = function() {
-    var key, object, objects, value, _i, _len;
-    objects = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    for (_i = 0, _len = objects.length; _i < _len; _i++) {
-      object = objects[_i];
-      for (key in object) {
-        value = object[key];
-        this[key] = value;
+  if (this.ParticleSaga == null) {
+    this.ParticleSaga = {};
+  }
+
+  ParticleSaga.Utils = (function() {
+    function Utils() {}
+
+    Utils.extend = function() {
+      var key, object, objects, target, value, _i, _len;
+      target = arguments[0], objects = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        for (key in object) {
+          value = object[key];
+          target[key] = value;
+        }
       }
-    }
-  };
+    };
+
+    return Utils;
+
+  })();
 
 }).call(this);
 ;(function() {
@@ -138,7 +149,7 @@
         revertDuration: 1000,
         sizeAttenuation: true
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ParticlePool.prototype.init = function() {
@@ -299,16 +310,17 @@
 
 
   /*
-  @Scene
-  The Particle Saga scene controller
-   */
-
-
-  /*
-  @param {Element} context - the container element for the component elements.
+   * @Scene
+   * The Particle Saga scene controller
    */
 
   ParticleSaga.Scene = (function() {
+
+    /*
+     * @param context - The element that contain the canvas
+     * @param targetData - The array of defined targets objects
+     * @param options - Object that will override default @opts
+     */
     function Scene(context, targetData, options) {
       this.context = context != null ? context : document.body;
       this.targetData = targetData != null ? targetData : [];
@@ -318,6 +330,7 @@
       this.setupPool = __bind(this.setupPool, this);
       this.onTargetsReady = __bind(this.onTargetsReady, this);
       this.onTargetLoad = __bind(this.onTargetLoad, this);
+      this.loadTarget = __bind(this.loadTarget, this);
       this.load = __bind(this.load, this);
       this.setupScene = __bind(this.setupScene, this);
       this.animate = __bind(this.animate, this);
@@ -359,7 +372,7 @@
         slideshowDuration: 5000,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
       document.addEventListener('mousemove', this.onMouseMove);
       this.setupScene();
     }
@@ -496,27 +509,41 @@
     };
 
     Scene.prototype.load = function(onAssetsLoad) {
-      var i, target, _i, _len, _ref, _results;
+      var t, _i, _len, _ref, _results;
       this.onAssetsLoad = onAssetsLoad;
       _ref = this.targetData;
       _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        target = _ref[i];
-        if (target.container == null) {
-          target.container = this.context;
-        }
-        if (target.options == null) {
-          target.options = {};
-        }
-        if (target.type !== ParticleSaga.ModelTarget) {
-          target.options.numParticles = this.opts.numParticles;
-        }
-        target.options.sort = this.opts.sort;
-        this.targets.push(new target.type(target, target.options));
-        this.targets[i].init();
-        _results.push(this.targets[i].load(this.onTargetLoad));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        t = _ref[_i];
+        _results.push(this.loadTarget(t, this.onTargetLoad));
       }
       return _results;
+    };
+
+
+    /*
+     * Load an individual target (safe to use for targets beyond the initial ones)
+     * @param target {PlainObject} - The target object description
+     * @param onLoad {Function} - Optional callback
+     */
+
+    Scene.prototype.loadTarget = function(target, onLoad) {
+      var particleTarget;
+      if (target.container == null) {
+        target.container = this.context;
+      }
+      if (target.options == null) {
+        target.options = {};
+      }
+      if (target.type !== ParticleSaga.ModelTarget) {
+        target.options.numParticles = this.opts.numParticles;
+      }
+      target.options.sort = this.opts.sort;
+      particleTarget = new target.type(target, target.options);
+      this.targets.push(particleTarget);
+      particleTarget.init();
+      particleTarget.load(onLoad);
+      return this.resetSlideshow();
     };
 
     Scene.prototype.onTargetLoad = function() {
@@ -699,7 +726,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ImageTarget.prototype.init = function() {
@@ -872,7 +899,7 @@
     function ModelTarget(targetData, options) {
       this.targetData = targetData;
       this.getParticles = __bind(this.getParticles, this);
-      this.processGeomtry = __bind(this.processGeomtry, this);
+      this.processGeometry = __bind(this.processGeometry, this);
       this.onLoad = __bind(this.onLoad, this);
       this.load = __bind(this.load, this);
       ModelTarget.__super__.constructor.call(this, this.targetData, options);
@@ -890,22 +917,31 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ModelTarget.prototype.load = function(callback) {
-      var loader;
+      var geometry, i, loader, verts, _i, _ref;
       ModelTarget.__super__.load.call(this, callback);
-      loader = new THREE.JSONLoader();
-      return loader.load(this.targetData.url, this.onLoad);
+      if (this.targetData.preloadedVertices != null) {
+        geometry = new THREE.Geometry();
+        verts = this.targetData.preloadedVertices;
+        for (i = _i = 0, _ref = verts.length; _i < _ref; i = _i += 3) {
+          geometry.vertices.push(new THREE.Vector3(verts[i], verts[i + 1], verts[i + 2]));
+        }
+        return this.onLoad(geometry);
+      } else {
+        loader = new THREE.JSONLoader();
+        return loader.load(this.targetData.url, this.onLoad);
+      }
     };
 
     ModelTarget.prototype.onLoad = function(geometry) {
-      this.processGeomtry(geometry);
+      this.processGeometry(geometry);
       return ModelTarget.__super__.onLoad.call(this);
     };
 
-    ModelTarget.prototype.processGeomtry = function(geometry) {
+    ModelTarget.prototype.processGeometry = function(geometry) {
       var material, matrix, vertex, _i, _j, _len, _len1, _ref, _ref1;
       geometry.mergeVertices();
       _ref = geometry.vertices;
@@ -985,7 +1021,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     MultiTarget.prototype.load = function(callback) {
@@ -1005,8 +1041,8 @@
           target.options.numParticles = this.opts.numParticles;
         }
         opts = {};
-        opts.extend(this.opts);
-        opts.extend(target.options);
+        ParticleSaga.Utils.extend(opts, this.opts);
+        ParticleSaga.Utils.extend(opts, target.options);
         this.targets.push(new target.type(target, opts));
         this.targets[i].init();
         _results.push(this.targets[i].load(this.onTargetLoad));

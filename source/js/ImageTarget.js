@@ -53,7 +53,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ImageTarget.prototype.init = function() {

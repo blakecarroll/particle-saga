@@ -44,7 +44,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     MultiTarget.prototype.load = function(callback) {
@@ -64,8 +64,8 @@
           target.options.numParticles = this.opts.numParticles;
         }
         opts = {};
-        opts.extend(this.opts);
-        opts.extend(target.options);
+        ParticleSaga.Utils.extend(opts, this.opts);
+        ParticleSaga.Utils.extend(opts, target.options);
         this.targets.push(new target.type(target, opts));
         this.targets[i].init();
         _results.push(this.targets[i].load(this.onTargetLoad));

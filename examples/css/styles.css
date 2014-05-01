@@ -1,5 +1,6 @@
 html,
 body {
+  font-family: 'Josefin Sans', sans-serif;
   overflow: hidden;
 }
 
@@ -10,6 +11,14 @@ body {
   position: absolute;
   top: 0;
   width: 100%;
+  -moz-transition: opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -ms-transition: opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -o-transition: opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  -webkit-transition: opacity 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#saga.dragover {
+  opacity: 0.9;
 }
 
 #multitarget-references {
@@ -62,4 +71,33 @@ nav button:hover {
 .next {
   background: url(../images/right.png);
   right: 5%;
+}
+
+#upload-indicator {
+  background-color: rgba(0,0,0,0.5);
+  bottom: 0;
+  color: #fff;
+  padding: 10px 20px 20px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+
+h1 {
+  color: #fff;
+  font-size: 2.4em;
+  letter-spacing: 4px;
+  margin-top: 40px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+h4 {
+  font-size: 1.5em;
+  line-height: 2em;
+}
+
+p {
+  font-size: 1.2em;
 }
