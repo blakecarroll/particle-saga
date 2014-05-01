@@ -7,8 +7,8 @@
 
 
   /*
-  @class AbstractTarget
-  Provides particle data for a particle scene.
+   * @AbstractTarget
+   * Abstract class that all particle targets must implement or override
    */
 
   ParticleSaga.AbstractTarget = (function() {
@@ -44,6 +44,12 @@
     };
 
     AbstractTarget.prototype.resize = function() {};
+
+
+    /*
+     * Must return a THREE.ParticleSystem - this is needed by the pool to maps
+     * vertices to this target
+     */
 
     AbstractTarget.prototype.getParticles = function() {
       return null;

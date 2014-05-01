@@ -1,6 +1,12 @@
 @ParticleSaga ?= {}
 
+###
+# @VertexSort
+# Ready to use sorting methods for controlling vertex morph animations
+###
+
 ParticleSaga.VertexSort =
+
   topToBottom: (a, b) =>
     if a.y < b.y
       return 1

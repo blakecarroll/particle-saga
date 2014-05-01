@@ -9,17 +9,12 @@
 
 
   /*
-  @class ModelTarget
-  Provides particle data for a 3D model based particle target.
+   * @ModelTarget
+   * Provides particle data for a 3D model based particle target.
    */
 
   ParticleSaga.ModelTarget = (function(_super) {
     __extends(ModelTarget, _super);
-
-
-    /*
-    @param {String} modelUrl - the .stl file url.
-     */
 
     function ModelTarget(targetData, options) {
       this.targetData = targetData;

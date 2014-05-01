@@ -9,8 +9,8 @@
 
 
   /*
-  @class MultiTarget
-  Provides particle data for a scene based on multiple targets.
+   * @MultiTarget
+   * A target for merging multiple targets into one.
    */
 
   ParticleSaga.MultiTarget = (function(_super) {

@@ -30,6 +30,12 @@
     this.ParticleSaga = {};
   }
 
+
+  /*
+   * @VertexSort
+   * Ready to use sorting methods for controlling vertex morph animations
+   */
+
   ParticleSaga.VertexSort = {
     topToBottom: (function(_this) {
       return function(a, b) {
@@ -116,9 +122,9 @@
 
 
   /*
-  @ParticlePool
-  Extends a THREE.ParticleSystem to include morphing methods specific to
-  ParticleSaga
+   * @ParticlePool
+   * Wraps a THREE.ParticleSystem to include morphing methods specific to
+   * ParticleSaga
    */
 
   ParticleSaga.ParticlePool = (function() {
@@ -247,6 +253,14 @@
       vert.z = Math.random() * 2 * this.halfZ / 3 - this.halfZ / 3;
       return vert;
     };
+
+
+    /*
+     * Used to evenly distribute particles over the target's vertices
+     * @param poolIndex - The current pool particle's index
+     * @param targetParticles - The target's particle system
+     * @return The target particle vertex index that should map to i
+     */
 
     ParticlePool.prototype.nextIndexForPool = function(poolIndex, targetParticles) {
       var numTargetParticles, ratio;
@@ -624,8 +638,8 @@
 
 
   /*
-  @class AbstractTarget
-  Provides particle data for a particle scene.
+   * @AbstractTarget
+   * Abstract class that all particle targets must implement or override
    */
 
   ParticleSaga.AbstractTarget = (function() {
@@ -662,6 +676,12 @@
 
     AbstractTarget.prototype.resize = function() {};
 
+
+    /*
+     * Must return a THREE.ParticleSystem - this is needed by the pool to maps
+     * vertices to this target
+     */
+
     AbstractTarget.prototype.getParticles = function() {
       return null;
     };
@@ -682,17 +702,12 @@
 
 
   /*
-  @class ImageTarget
-  Identifies and produces geometry for particles based on an image.
+   * @ImageTarget
+   * Identifies and produces geometry for particles based on an image.
    */
 
   ParticleSaga.ImageTarget = (function(_super) {
     __extends(ImageTarget, _super);
-
-
-    /*
-    @param {Object} targetData - Must contain a url and any other options
-     */
 
     function ImageTarget(targetData, options) {
       this.targetData = targetData;
@@ -789,6 +804,12 @@
       return ImageTarget.__super__.onLoad.call(this);
     };
 
+
+    /*
+     * Generate particles for an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.processImage = function(img) {
       var geometry, i, material, vertex, _i, _j, _ref, _ref1;
       this.imageData = this.getImageDataFromImg(img);
@@ -812,6 +833,12 @@
       return this.particles = new THREE.ParticleSystem(geometry, material);
     };
 
+
+    /*
+     * Extracts image data object from an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.getImageDataFromImg = function(img) {
       var canvas, ctx;
       canvas = document.createElement('canvas');
@@ -829,6 +856,12 @@
       vertex = this.getVertexForPixelDataOffset(pixelOffset);
       return vertex;
     };
+
+
+    /*
+     * Returns a vertex based on the index of a visible red component in the pixel
+     * data array
+     */
 
     ImageTarget.prototype.getVertexForPixelDataOffset = function(pixelOffset) {
       var b, compsPerRow, g, r, vertex, x, y;
@@ -884,17 +917,12 @@
 
 
   /*
-  @class ModelTarget
-  Provides particle data for a 3D model based particle target.
+   * @ModelTarget
+   * Provides particle data for a 3D model based particle target.
    */
 
   ParticleSaga.ModelTarget = (function(_super) {
     __extends(ModelTarget, _super);
-
-
-    /*
-    @param {String} modelUrl - the .stl file url.
-     */
 
     function ModelTarget(targetData, options) {
       this.targetData = targetData;
@@ -986,8 +1014,8 @@
 
 
   /*
-  @class MultiTarget
-  Provides particle data for a scene based on multiple targets.
+   * @MultiTarget
+   * A target for merging multiple targets into one.
    */
 
   ParticleSaga.MultiTarget = (function(_super) {

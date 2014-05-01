@@ -1,14 +1,12 @@
 @ParticleSaga ?= {}
 
 ###
-@class ModelTarget
-Provides particle data for a 3D model based particle target.
+# @ModelTarget
+# Provides particle data for a 3D model based particle target.
 ###
 
 class ParticleSaga.ModelTarget extends ParticleSaga.AbstractTarget
-  ###
-  @param {String} modelUrl - the .stl file url.
-  ###
+
   constructor: (@targetData, options) ->
     super(@targetData, options)
     @particles
@@ -41,6 +39,7 @@ class ParticleSaga.ModelTarget extends ParticleSaga.AbstractTarget
     @processGeometry geometry
     super()
 
+  # Prepares a particle system based on some geometry
   processGeometry: (geometry) =>
     geometry.mergeVertices()
     for vertex in geometry.vertices

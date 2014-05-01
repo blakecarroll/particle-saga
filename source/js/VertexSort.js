@@ -3,6 +3,12 @@
     this.ParticleSaga = {};
   }
 
+
+  /*
+   * @VertexSort
+   * Ready to use sorting methods for controlling vertex morph animations
+   */
+
   ParticleSaga.VertexSort = {
     topToBottom: (function(_this) {
       return function(a, b) {
