@@ -265,7 +265,7 @@ After satisfying those requirements you can install the project-specific depende
 
 ## Inspiration
 
-Special thanks to [Eric Moncada](https://github.com/theskabeater) and [Impossible Bureau](http://www.impossible-bureau.com/). This originally came about while working on our ever-upcoming website where we wanted to showcase our team using individual models that Eric scanned with a Kinect. Later the idea of intertwining these with other models and images came through Brijan Powell's designs. It'll be live soon I promise!
+Special thanks to [Eric Moncada](https://github.com/theskabeater), [Brijan Powell](https://twitter.com/brijanp) and [Impossible Bureau](http://www.impossible-bureau.com/). This originally came about while working on our ever-upcoming website where we wanted to showcase our team using individual models that Eric scanned with a Kinect. Later the idea of intertwining these with other models and images came through Brijan's designs. It'll be live soon I promise!
 
 
 ## Example Artwork:
