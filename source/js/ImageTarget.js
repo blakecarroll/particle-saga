@@ -9,17 +9,12 @@
 
 
   /*
-  @class ImageTarget
-  Identifies and produces geometry for particles based on an image.
+   * @ImageTarget
+   * Identifies and produces geometry for particles based on an image.
    */
 
   ParticleSaga.ImageTarget = (function(_super) {
     __extends(ImageTarget, _super);
-
-
-    /*
-    @param {Object} targetData - Must contain a url and any other options
-     */
 
     function ImageTarget(targetData, options) {
       this.targetData = targetData;
@@ -53,7 +48,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ImageTarget.prototype.init = function() {
@@ -116,6 +111,12 @@
       return ImageTarget.__super__.onLoad.call(this);
     };
 
+
+    /*
+     * Generate particles for an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.processImage = function(img) {
       var geometry, i, material, vertex, _i, _j, _ref, _ref1;
       this.imageData = this.getImageDataFromImg(img);
@@ -139,6 +140,12 @@
       return this.particles = new THREE.ParticleSystem(geometry, material);
     };
 
+
+    /*
+     * Extracts image data object from an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.getImageDataFromImg = function(img) {
       var canvas, ctx;
       canvas = document.createElement('canvas');
@@ -156,6 +163,12 @@
       vertex = this.getVertexForPixelDataOffset(pixelOffset);
       return vertex;
     };
+
+
+    /*
+     * Returns a vertex based on the index of a visible red component in the pixel
+     * data array
+     */
 
     ImageTarget.prototype.getVertexForPixelDataOffset = function(pixelOffset) {
       var b, compsPerRow, g, r, vertex, x, y;

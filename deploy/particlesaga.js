@@ -1,23 +1,40 @@
 (function() {
   var __slice = [].slice;
 
-  Object.prototype.extend = function() {
-    var key, object, objects, value, _i, _len;
-    objects = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    for (_i = 0, _len = objects.length; _i < _len; _i++) {
-      object = objects[_i];
-      for (key in object) {
-        value = object[key];
-        this[key] = value;
+  if (this.ParticleSaga == null) {
+    this.ParticleSaga = {};
+  }
+
+  ParticleSaga.Utils = (function() {
+    function Utils() {}
+
+    Utils.extend = function() {
+      var key, object, objects, target, value, _i, _len;
+      target = arguments[0], objects = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        for (key in object) {
+          value = object[key];
+          target[key] = value;
+        }
       }
-    }
-  };
+    };
+
+    return Utils;
+
+  })();
 
 }).call(this);
 ;(function() {
   if (this.ParticleSaga == null) {
     this.ParticleSaga = {};
   }
+
+
+  /*
+   * @VertexSort
+   * Ready to use sorting methods for controlling vertex morph animations
+   */
 
   ParticleSaga.VertexSort = {
     topToBottom: (function(_this) {
@@ -105,9 +122,9 @@
 
 
   /*
-  @ParticlePool
-  Extends a THREE.ParticleSystem to include morphing methods specific to
-  ParticleSaga
+   * @ParticlePool
+   * Wraps a THREE.ParticleSystem to include morphing methods specific to
+   * ParticleSaga
    */
 
   ParticleSaga.ParticlePool = (function() {
@@ -138,7 +155,7 @@
         revertDuration: 1000,
         sizeAttenuation: true
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ParticlePool.prototype.init = function() {
@@ -237,6 +254,14 @@
       return vert;
     };
 
+
+    /*
+     * Used to evenly distribute particles over the target's vertices
+     * @param poolIndex - The current pool particle's index
+     * @param targetParticles - The target's particle system
+     * @return The target particle vertex index that should map to i
+     */
+
     ParticlePool.prototype.nextIndexForPool = function(poolIndex, targetParticles) {
       var numTargetParticles, ratio;
       numTargetParticles = targetParticles.geometry.vertices.length;
@@ -299,16 +324,17 @@
 
 
   /*
-  @Scene
-  The Particle Saga scene controller
-   */
-
-
-  /*
-  @param {Element} context - the container element for the component elements.
+   * @Scene
+   * The Particle Saga scene controller
    */
 
   ParticleSaga.Scene = (function() {
+
+    /*
+     * @param context - The element that contain the canvas
+     * @param targetData - The array of defined targets objects
+     * @param options - Object that will override default @opts
+     */
     function Scene(context, targetData, options) {
       this.context = context != null ? context : document.body;
       this.targetData = targetData != null ? targetData : [];
@@ -318,6 +344,7 @@
       this.setupPool = __bind(this.setupPool, this);
       this.onTargetsReady = __bind(this.onTargetsReady, this);
       this.onTargetLoad = __bind(this.onTargetLoad, this);
+      this.loadTarget = __bind(this.loadTarget, this);
       this.load = __bind(this.load, this);
       this.setupScene = __bind(this.setupScene, this);
       this.animate = __bind(this.animate, this);
@@ -359,7 +386,7 @@
         slideshowDuration: 5000,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
       document.addEventListener('mousemove', this.onMouseMove);
       this.setupScene();
     }
@@ -496,27 +523,41 @@
     };
 
     Scene.prototype.load = function(onAssetsLoad) {
-      var i, target, _i, _len, _ref, _results;
+      var t, _i, _len, _ref, _results;
       this.onAssetsLoad = onAssetsLoad;
       _ref = this.targetData;
       _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        target = _ref[i];
-        if (target.container == null) {
-          target.container = this.context;
-        }
-        if (target.options == null) {
-          target.options = {};
-        }
-        if (target.type !== ParticleSaga.ModelTarget) {
-          target.options.numParticles = this.opts.numParticles;
-        }
-        target.options.sort = this.opts.sort;
-        this.targets.push(new target.type(target, target.options));
-        this.targets[i].init();
-        _results.push(this.targets[i].load(this.onTargetLoad));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        t = _ref[_i];
+        _results.push(this.loadTarget(t, this.onTargetLoad));
       }
       return _results;
+    };
+
+
+    /*
+     * Load an individual target (safe to use for targets beyond the initial ones)
+     * @param target {PlainObject} - The target object description
+     * @param onLoad {Function} - Optional callback
+     */
+
+    Scene.prototype.loadTarget = function(target, onLoad) {
+      var particleTarget;
+      if (target.container == null) {
+        target.container = this.context;
+      }
+      if (target.options == null) {
+        target.options = {};
+      }
+      if (target.type !== ParticleSaga.ModelTarget) {
+        target.options.numParticles = this.opts.numParticles;
+      }
+      target.options.sort = this.opts.sort;
+      particleTarget = new target.type(target, target.options);
+      this.targets.push(particleTarget);
+      particleTarget.init();
+      particleTarget.load(onLoad);
+      return this.resetSlideshow();
     };
 
     Scene.prototype.onTargetLoad = function() {
@@ -597,8 +638,8 @@
 
 
   /*
-  @class AbstractTarget
-  Provides particle data for a particle scene.
+   * @AbstractTarget
+   * Abstract class that all particle targets must implement or override
    */
 
   ParticleSaga.AbstractTarget = (function() {
@@ -635,6 +676,12 @@
 
     AbstractTarget.prototype.resize = function() {};
 
+
+    /*
+     * Must return a THREE.ParticleSystem - this is needed by the pool to maps
+     * vertices to this target
+     */
+
     AbstractTarget.prototype.getParticles = function() {
       return null;
     };
@@ -655,17 +702,12 @@
 
 
   /*
-  @class ImageTarget
-  Identifies and produces geometry for particles based on an image.
+   * @ImageTarget
+   * Identifies and produces geometry for particles based on an image.
    */
 
   ParticleSaga.ImageTarget = (function(_super) {
     __extends(ImageTarget, _super);
-
-
-    /*
-    @param {Object} targetData - Must contain a url and any other options
-     */
 
     function ImageTarget(targetData, options) {
       this.targetData = targetData;
@@ -699,7 +741,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ImageTarget.prototype.init = function() {
@@ -762,6 +804,12 @@
       return ImageTarget.__super__.onLoad.call(this);
     };
 
+
+    /*
+     * Generate particles for an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.processImage = function(img) {
       var geometry, i, material, vertex, _i, _j, _ref, _ref1;
       this.imageData = this.getImageDataFromImg(img);
@@ -785,6 +833,12 @@
       return this.particles = new THREE.ParticleSystem(geometry, material);
     };
 
+
+    /*
+     * Extracts image data object from an image
+     * @param img - A loaded img element
+     */
+
     ImageTarget.prototype.getImageDataFromImg = function(img) {
       var canvas, ctx;
       canvas = document.createElement('canvas');
@@ -802,6 +856,12 @@
       vertex = this.getVertexForPixelDataOffset(pixelOffset);
       return vertex;
     };
+
+
+    /*
+     * Returns a vertex based on the index of a visible red component in the pixel
+     * data array
+     */
 
     ImageTarget.prototype.getVertexForPixelDataOffset = function(pixelOffset) {
       var b, compsPerRow, g, r, vertex, x, y;
@@ -857,22 +917,17 @@
 
 
   /*
-  @class ModelTarget
-  Provides particle data for a 3D model based particle target.
+   * @ModelTarget
+   * Provides particle data for a 3D model based particle target.
    */
 
   ParticleSaga.ModelTarget = (function(_super) {
     __extends(ModelTarget, _super);
 
-
-    /*
-    @param {String} modelUrl - the .stl file url.
-     */
-
     function ModelTarget(targetData, options) {
       this.targetData = targetData;
       this.getParticles = __bind(this.getParticles, this);
-      this.processGeomtry = __bind(this.processGeomtry, this);
+      this.processGeometry = __bind(this.processGeometry, this);
       this.onLoad = __bind(this.onLoad, this);
       this.load = __bind(this.load, this);
       ModelTarget.__super__.constructor.call(this, this.targetData, options);
@@ -890,22 +945,31 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ModelTarget.prototype.load = function(callback) {
-      var loader;
+      var geometry, i, loader, verts, _i, _ref;
       ModelTarget.__super__.load.call(this, callback);
-      loader = new THREE.JSONLoader();
-      return loader.load(this.targetData.url, this.onLoad);
+      if (this.targetData.preloadedVertices != null) {
+        geometry = new THREE.Geometry();
+        verts = this.targetData.preloadedVertices;
+        for (i = _i = 0, _ref = verts.length; _i < _ref; i = _i += 3) {
+          geometry.vertices.push(new THREE.Vector3(verts[i], verts[i + 1], verts[i + 2]));
+        }
+        return this.onLoad(geometry);
+      } else {
+        loader = new THREE.JSONLoader();
+        return loader.load(this.targetData.url, this.onLoad);
+      }
     };
 
     ModelTarget.prototype.onLoad = function(geometry) {
-      this.processGeomtry(geometry);
+      this.processGeometry(geometry);
       return ModelTarget.__super__.onLoad.call(this);
     };
 
-    ModelTarget.prototype.processGeomtry = function(geometry) {
+    ModelTarget.prototype.processGeometry = function(geometry) {
       var material, matrix, vertex, _i, _j, _len, _len1, _ref, _ref1;
       geometry.mergeVertices();
       _ref = geometry.vertices;
@@ -950,8 +1014,8 @@
 
 
   /*
-  @class MultiTarget
-  Provides particle data for a scene based on multiple targets.
+   * @MultiTarget
+   * A target for merging multiple targets into one.
    */
 
   ParticleSaga.MultiTarget = (function(_super) {
@@ -985,7 +1049,7 @@
         size: 1.0,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     MultiTarget.prototype.load = function(callback) {
@@ -1005,8 +1069,8 @@
           target.options.numParticles = this.opts.numParticles;
         }
         opts = {};
-        opts.extend(this.opts);
-        opts.extend(target.options);
+        ParticleSaga.Utils.extend(opts, this.opts);
+        ParticleSaga.Utils.extend(opts, target.options);
         this.targets.push(new target.type(target, opts));
         this.targets[i].init();
         _results.push(this.targets[i].load(this.onTargetLoad));

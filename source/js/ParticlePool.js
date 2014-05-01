@@ -7,9 +7,9 @@
 
 
   /*
-  @ParticlePool
-  Extends a THREE.ParticleSystem to include morphing methods specific to
-  ParticleSaga
+   * @ParticlePool
+   * Wraps a THREE.ParticleSystem to include morphing methods specific to
+   * ParticleSaga
    */
 
   ParticleSaga.ParticlePool = (function() {
@@ -40,7 +40,7 @@
         revertDuration: 1000,
         sizeAttenuation: true
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
     }
 
     ParticlePool.prototype.init = function() {
@@ -138,6 +138,14 @@
       vert.z = Math.random() * 2 * this.halfZ / 3 - this.halfZ / 3;
       return vert;
     };
+
+
+    /*
+     * Used to evenly distribute particles over the target's vertices
+     * @param poolIndex - The current pool particle's index
+     * @param targetParticles - The target's particle system
+     * @return The target particle vertex index that should map to i
+     */
 
     ParticlePool.prototype.nextIndexForPool = function(poolIndex, targetParticles) {
       var numTargetParticles, ratio;

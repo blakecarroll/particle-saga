@@ -7,16 +7,17 @@
 
 
   /*
-  @Scene
-  The Particle Saga scene controller
-   */
-
-
-  /*
-  @param {Element} context - the container element for the component elements.
+   * @Scene
+   * The Particle Saga scene controller
    */
 
   ParticleSaga.Scene = (function() {
+
+    /*
+     * @param context - The element that contain the canvas
+     * @param targetData - The array of defined targets objects
+     * @param options - Object that will override default @opts
+     */
     function Scene(context, targetData, options) {
       this.context = context != null ? context : document.body;
       this.targetData = targetData != null ? targetData : [];
@@ -26,6 +27,7 @@
       this.setupPool = __bind(this.setupPool, this);
       this.onTargetsReady = __bind(this.onTargetsReady, this);
       this.onTargetLoad = __bind(this.onTargetLoad, this);
+      this.loadTarget = __bind(this.loadTarget, this);
       this.load = __bind(this.load, this);
       this.setupScene = __bind(this.setupScene, this);
       this.animate = __bind(this.animate, this);
@@ -67,7 +69,7 @@
         slideshowDuration: 5000,
         sort: null
       };
-      this.opts.extend(options);
+      ParticleSaga.Utils.extend(this.opts, options);
       document.addEventListener('mousemove', this.onMouseMove);
       this.setupScene();
     }
@@ -204,27 +206,41 @@
     };
 
     Scene.prototype.load = function(onAssetsLoad) {
-      var i, target, _i, _len, _ref, _results;
+      var t, _i, _len, _ref, _results;
       this.onAssetsLoad = onAssetsLoad;
       _ref = this.targetData;
       _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        target = _ref[i];
-        if (target.container == null) {
-          target.container = this.context;
-        }
-        if (target.options == null) {
-          target.options = {};
-        }
-        if (target.type !== ParticleSaga.ModelTarget) {
-          target.options.numParticles = this.opts.numParticles;
-        }
-        target.options.sort = this.opts.sort;
-        this.targets.push(new target.type(target, target.options));
-        this.targets[i].init();
-        _results.push(this.targets[i].load(this.onTargetLoad));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        t = _ref[_i];
+        _results.push(this.loadTarget(t, this.onTargetLoad));
       }
       return _results;
+    };
+
+
+    /*
+     * Load an individual target (safe to use for targets beyond the initial ones)
+     * @param target {PlainObject} - The target object description
+     * @param onLoad {Function} - Optional callback
+     */
+
+    Scene.prototype.loadTarget = function(target, onLoad) {
+      var particleTarget;
+      if (target.container == null) {
+        target.container = this.context;
+      }
+      if (target.options == null) {
+        target.options = {};
+      }
+      if (target.type !== ParticleSaga.ModelTarget) {
+        target.options.numParticles = this.opts.numParticles;
+      }
+      target.options.sort = this.opts.sort;
+      particleTarget = new target.type(target, target.options);
+      this.targets.push(particleTarget);
+      particleTarget.init();
+      particleTarget.load(onLoad);
+      return this.resetSlideshow();
     };
 
     Scene.prototype.onTargetLoad = function() {

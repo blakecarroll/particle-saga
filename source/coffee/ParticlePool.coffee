@@ -1,12 +1,13 @@
 @ParticleSaga ?= {}
 
 ###
-@ParticlePool
-Extends a THREE.ParticleSystem to include morphing methods specific to
-ParticleSaga
+# @ParticlePool
+# Wraps a THREE.ParticleSystem to include morphing methods specific to
+# ParticleSaga
 ###
 
 class ParticleSaga.ParticlePool
+
   constructor: (options) ->
     @particles
     @respondingToMouse = false
@@ -23,17 +24,19 @@ class ParticleSaga.ParticlePool
       particleRevertDelay: 0.008
       revertDuration: 1000
       sizeAttenuation: true
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   init: ->
     @createParticles()
 
+  # Drops applicable references
   destroy: =>
     @particles.geometry.dispose()
     @particles.material.dispose()
     @particles = null
     @opts = null
 
+  # Morph particles to specific target
   setTarget: (targetParticles, animated=true) =>
     targetParticles = targetParticles.clone()
     @particles.material.size = targetParticles.material.size
@@ -59,6 +62,7 @@ class ParticleSaga.ParticlePool
 
   resize: (@halfW, @halfH, @halfZ) =>
 
+  # Construct initial particle system
   createParticles: =>
     geometry = new THREE.Geometry()
     if @opts.numFloatingParticles > 0
@@ -89,6 +93,7 @@ class ParticleSaga.ParticlePool
   getParticles: =>
     return @particles
 
+  # Returns A vertex with random but visible coordinates
   makeRandomVertex: =>
     vert = new THREE.Vector3 0, 0, 0
     vert.x = Math.random() * 2 * @halfW - @halfW
@@ -96,11 +101,18 @@ class ParticleSaga.ParticlePool
     vert.z = Math.random() * 2 * @halfZ/3 - @halfZ/3
     return vert
 
+  ###
+  # Used to evenly distribute particles over the target's vertices
+  # @param poolIndex - The current pool particle's index
+  # @param targetParticles - The target's particle system
+  # @return The target particle vertex index that should map to i
+  ###
   nextIndexForPool: (poolIndex, targetParticles) =>
     numTargetParticles = targetParticles.geometry.vertices.length
     ratio = numTargetParticles/@opts.numParticles
     return Math.floor poolIndex * ratio
 
+  # Progress method for updating the current morph
   morph: =>
     now = new Date();
     deltaT = now - @morphStartTime

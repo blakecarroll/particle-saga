@@ -1,8 +1,8 @@
 @ParticleSaga ?= {}
 
 ###
-@class MultiTarget
-Provides particle data for a scene based on multiple targets.
+# @MultiTarget
+# A target for merging multiple targets into one.
 ###
 
 class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
@@ -24,8 +24,9 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
       respondsToMouse: false
       size: 1.0
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
+  # Load all nested target assets
   load: (callback) =>
     super(callback)
     for target, i in @targetData.targets
@@ -34,8 +35,8 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
       if target.type != ParticleSaga.ModelTarget
         target.options.numParticles = @opts.numParticles
       opts = {}
-      opts.extend @opts
-      opts.extend target.options
+      ParticleSaga.Utils.extend opts, @opts
+      ParticleSaga.Utils.extend opts, target.options
       @targets.push new target.type target, opts
       @targets[i].init()
       @targets[i].load(@onTargetLoad)
@@ -46,6 +47,7 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
       @resize()
       @onLoad()
 
+  # Create particle system by merging nested targets'
   prepareParticles: =>
     geometry = new THREE.Geometry()
     for target, i in @targets
@@ -64,6 +66,7 @@ class ParticleSaga.MultiTarget extends ParticleSaga.AbstractTarget
     material = new THREE.ParticleSystemMaterial size: @opts.size
     @particles = new THREE.ParticleSystem geometry, material
 
+  # Returns 3D scene x/y coords based on nested targets' container positions
   getTargetOffsets: (targetData) =>
     halfW = 0
     halfH = 0

@@ -1,15 +1,12 @@
 @ParticleSaga ?= {}
 
 ###
-@class ImageTarget
-Identifies and produces geometry for particles based on an image.
+# @ImageTarget
+# Identifies and produces geometry for particles based on an image.
 ###
 
 class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
 
-  ###
-  @param {Object} targetData - Must contain a url and any other options
-  ###
   constructor: (@targetData, options) ->
     super(@targetData, options)
     @particles
@@ -27,7 +24,7 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
       respondsToMouse: false
       size: 1.0
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   init: =>
     @resize()
@@ -40,6 +37,7 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
       if @particles
         @updateParticlePositions()
 
+  # Calculates sizing data needed to position the image particles
   updatePositionAdjustments: =>
     width = @maxW
     height = @maxH
@@ -56,6 +54,7 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
     @offsetX = (@maxW - @imageData.width) / 2
     @offsetY = -(@maxH - @imageData.height) / 2
 
+  # Updates particle positions after a resize
   updateParticlePositions: =>
     for vertex in @particles.geometry.vertices
       v = @getVertexForPixelDataOffset vertex.userData.pixelOffset
@@ -72,6 +71,10 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
     @processImage(img)
     super()
 
+  ###
+  # Generate particles for an image
+  # @param img - A loaded img element
+  ###
   processImage: (img) =>
     @imageData = @getImageDataFromImg(img)
     @updatePositionAdjustments()
@@ -90,6 +93,10 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
     material = new THREE.ParticleSystemMaterial size: @opts.size
     @particles = new THREE.ParticleSystem geometry, material
 
+  ###
+  # Extracts image data object from an image
+  # @param img - A loaded img element
+  ###
   getImageDataFromImg: (img) =>
     canvas = document.createElement 'canvas'
     canvas.width = img.width
@@ -98,12 +105,17 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
     ctx.drawImage img, 0, 0
     return ctx.getImageData 0, 0, img.width, img.height
 
+  # Returns a vertex that corresponds with a random, visible pixel
   randomVertexInImage: =>
     randomIndex = Math.floor(Math.random()*@validPixelArrayOffsets.length)
     pixelOffset = @validPixelArrayOffsets[randomIndex]
     vertex = @getVertexForPixelDataOffset pixelOffset
     return vertex
 
+  ###
+  # Returns a vertex based on the index of a visible red component in the pixel
+  # data array
+  ###
   getVertexForPixelDataOffset: (pixelOffset) =>
     r = @imageData.data[pixelOffset]
     g = @imageData.data[pixelOffset+1]
@@ -122,6 +134,7 @@ class ParticleSaga.ImageTarget extends ParticleSaga.AbstractTarget
     @scalevertex vertex
     return vertex
 
+  # Centers a vertex based on current sizing information
   centerVertex: (vertex) =>
     # Convert coordinates centered about origin
     vertex.x -= @maxW/2

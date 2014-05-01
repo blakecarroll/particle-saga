@@ -1,14 +1,12 @@
 @ParticleSaga ?= {}
 
 ###
-@class ModelTarget
-Provides particle data for a 3D model based particle target.
+# @ModelTarget
+# Provides particle data for a 3D model based particle target.
 ###
 
 class ParticleSaga.ModelTarget extends ParticleSaga.AbstractTarget
-  ###
-  @param {String} modelUrl - the .stl file url.
-  ###
+
   constructor: (@targetData, options) ->
     super(@targetData, options)
     @particles
@@ -23,18 +21,26 @@ class ParticleSaga.ModelTarget extends ParticleSaga.AbstractTarget
       scale: 1.0
       size: 1.0
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
   load: (callback) =>
     super(callback)
-    loader = new THREE.JSONLoader()
-    loader.load @targetData.url, @onLoad
+    if @targetData.preloadedVertices?
+      geometry = new THREE.Geometry()
+      verts = @targetData.preloadedVertices
+      for i in [0...verts.length] by 3
+        geometry.vertices.push new THREE.Vector3 verts[i], verts[i+1], verts[i+2]
+      @onLoad geometry
+    else
+      loader = new THREE.JSONLoader()
+      loader.load @targetData.url, @onLoad
 
   onLoad: (geometry) =>
-    @processGeomtry geometry
+    @processGeometry geometry
     super()
 
-  processGeomtry: (geometry) =>
+  # Prepares a particle system based on some geometry
+  processGeometry: (geometry) =>
     geometry.mergeVertices()
     for vertex in geometry.vertices
       vertex.userData = {color: @opts.color}

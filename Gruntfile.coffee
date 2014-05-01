@@ -1,6 +1,6 @@
 module.exports = (grunt) ->
   concatenatedScriptSources = [
-    'source/js/Helpers.js',
+    'source/js/Utils.js',
     'source/js/VertexSort.js',
     'source/js/ParticlePool.js',
     'source/js/Scene.js',

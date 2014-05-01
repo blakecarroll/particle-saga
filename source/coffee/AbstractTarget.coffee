@@ -1,11 +1,12 @@
 @ParticleSaga ?= {}
 
 ###
-@class AbstractTarget
-Provides particle data for a particle scene.
+# @AbstractTarget
+# Abstract class that all particle targets must implement or override
 ###
 
 class ParticleSaga.AbstractTarget
+
   constructor: (@targetData, options) ->
     @onLoadCallback
 
@@ -15,6 +16,7 @@ class ParticleSaga.AbstractTarget
   load: (callback) =>
     @onLoadCallback = callback
 
+  # Called after target has loaded
   onLoad: () =>
     if @onLoadCallback?
       @onLoadCallback()
@@ -27,5 +29,9 @@ class ParticleSaga.AbstractTarget
 
   resize: =>
 
+  ###
+  # Must return a THREE.ParticleSystem - this is needed by the pool to maps
+  # vertices to this target
+  ###
   getParticles: =>
     return null

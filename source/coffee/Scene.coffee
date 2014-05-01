@@ -1,14 +1,17 @@
 @ParticleSaga ?= {}
 
 ###
-@Scene
-The Particle Saga scene controller
+# @Scene
+# The Particle Saga scene controller
 ###
 
-###
-@param {Element} context - the container element for the component elements.
-###
 class ParticleSaga.Scene
+
+  ###
+  # @param context - The element that contain the canvas
+  # @param targetData - The array of defined targets objects
+  # @param options - Object that will override default @opts
+  ###
   constructor: (@context=document.body, @targetData=[], options) ->
     @camera
     @scene
@@ -38,11 +41,12 @@ class ParticleSaga.Scene
       sizeAttenuation: true
       slideshowDuration: 5000
       sort: null
-    @opts.extend options
+    ParticleSaga.Utils.extend @opts, options
 
     document.addEventListener 'mousemove', @onMouseMove
     @setupScene()
 
+  # Halts animations and drops applicable references
   destroy: =>
     @stop()
     window.removeEventListener 'resize', @resize
@@ -61,6 +65,7 @@ class ParticleSaga.Scene
     @targets = null
     @opts = null
 
+  # Morph particles to specific target
   setTarget: (index, animated=true) =>
     @currentTargetIndex = index
     if not @sceneReady
@@ -133,22 +138,34 @@ class ParticleSaga.Scene
     @renderer.setSize 2*@halfW, 2*@halfH
     @context.appendChild @renderer.domElement
 
+  # Load initial targetData
   load: (@onAssetsLoad) =>
-    for target, i in @targetData
-      target.container ?= @context
-      target.options ?= {}
-      if target.type != ParticleSaga.ModelTarget
-        target.options.numParticles = @opts.numParticles
-      target.options.sort = @opts.sort
-      @targets.push new target.type target, target.options
-      @targets[i].init()
-      @targets[i].load @onTargetLoad
+    @loadTarget(t, @onTargetLoad) for t in @targetData
 
+  ###
+  # Load an individual target (safe to use for targets beyond the initial ones)
+  # @param target {PlainObject} - The target object description
+  # @param onLoad {Function} - Optional callback
+  ###
+  loadTarget: (target, onLoad) =>
+    target.container ?= @context
+    target.options ?= {}
+    if target.type != ParticleSaga.ModelTarget
+      target.options.numParticles = @opts.numParticles
+    target.options.sort = @opts.sort
+    particleTarget = new target.type target, target.options
+    @targets.push particleTarget
+    particleTarget.init()
+    particleTarget.load onLoad
+    @resetSlideshow()
+
+  # Load callback used for initial load
   onTargetLoad: =>
     @numTargetsLoaded++
     if @numTargetsLoaded > 0 and @numTargetsLoaded == @targetData.length
       @onTargetsReady()
 
+  # Begins animations when initial assets have loaded
   onTargetsReady: =>
     @setupPool()
     window.addEventListener 'resize', @resize
