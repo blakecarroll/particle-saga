@@ -230,3 +230,7 @@ iframe {
   margin: auto;
   width: 47px  !important;
 }
+
+#no-webgl-message {
+  color: #fff;
+}

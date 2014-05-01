@@ -49,6 +49,7 @@
 
 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r66/three.min.js"></script>
+    <script type="text/javascript" src="examples/vendor/Detector.js"></script>
     <script type="text/javascript" src="deploy/particlesaga.js"></script>
     <script type="text/javascript">
 
@@ -262,20 +263,27 @@
         })
       }
 
-      // Start the scene
       var saga = document.getElementById('saga');
-      var scene = new ParticleSaga.Scene(saga, targets, {
-        numParticles: 40000,
-        numFloatingParticles: 200,
-        sort: ParticleSaga.VertexSort.leftToRight
-      });
-      scene.load(function() {
-        setupDemoUI();
-        setTimeout(function() {
-          scene.setTarget(0);
-          scene.startSlideshow();
-        }, 800);
-      });
+      if (!Detector.webgl) {
+        Detector.addGetWebGLMessage({
+          parent: saga,
+          id: 'no-webgl-message'
+        });
+      } else {
+        // Start the scene
+        var scene = new ParticleSaga.Scene(saga, targets, {
+          numParticles: 40000,
+          numFloatingParticles: 200,
+          sort: ParticleSaga.VertexSort.leftToRight
+        });
+        scene.load(function() {
+          setupDemoUI();
+          setTimeout(function() {
+            scene.setTarget(0);
+            scene.startSlideshow();
+          }, 800);
+        });
+      }
     </script>
 
     <script>
