@@ -421,7 +421,7 @@
         animated = true;
       }
       this.currentTargetIndex = index;
-      if (!this.sceneReady) {
+      if (!this.sceneReady || typeof this.currentTargetIndex === 'undefined') {
         return;
       }
       if (this.targets[this.currentTargetIndex].opts.respondsToMouse) {

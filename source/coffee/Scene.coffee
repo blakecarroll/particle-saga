@@ -68,7 +68,7 @@ class ParticleSaga.Scene
   # Morph particles to specific target
   setTarget: (index, animated=true) =>
     @currentTargetIndex = index
-    if not @sceneReady
+    if not @sceneReady or typeof @currentTargetIndex is 'undefined'
       return
     if @targets[@currentTargetIndex].opts.respondsToMouse
       @respondingToMouse = true
