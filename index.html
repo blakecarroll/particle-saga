@@ -18,6 +18,10 @@
         <li id="multitarget-reference-2"></li>
         <li id="multitarget-reference-3"></li>
         <li id="multitarget-reference-4"></li>
+        <li id="multitarget-reference-5"></li>
+        <li id="multitarget-reference-6"></li>
+        <li id="multitarget-reference-7"></li>
+        <li id="multitarget-reference-8"></li>
       </ul>
     </div>
 
@@ -35,101 +39,83 @@
        * Here we have 2 models, 2 images, and a MultiTarget collection
        * of the same models and images again.
        */
-      var targets = [
-        {
-          type: ParticleSaga.ModelTarget,
-          url: './models/helmet.json',
+      var targets = [{
+          type: ParticleSaga.ImageTarget,
+          url: './images/1.png',
           options: {
             color: {
               r: 0.8,
               g: 1,
               b: 1
             },
-            scale: 110,
-            size: 3,
-            respondsToMouse: true
-          }
-        }, {
-          type: ParticleSaga.ImageTarget,
-          url: './images/griffin.png',
-          options: {
             respondsToMouse: true,
-            size: 3
+            size: 1
           }
-        }, {
-          type: ParticleSaga.ModelTarget,
-          url: './models/gryphon.json',
+        }
+        ,{
+          type: ParticleSaga.ImageTarget,
+          url: './images/2.png',
+          options: {
+            color: {
+              r: 0.8,
+              g: 0.4,
+              b: 1
+            },
+            respondsToMouse: true,
+            size: 1
+          }
+        }
+        ,{
+          type: ParticleSaga.ImageTarget,
+          url: './images/3.png',
           options: {
             color: {
               r: 0.8,
               g: 1,
-              b: 0.2
+              b: 1
             },
-            size: 3,
-            scale: 120,
             respondsToMouse: true,
-            initialMatrices: [
-              new THREE.Matrix4().makeTranslation(0,-2, 0),
-              new THREE.Matrix4().makeRotationY(Math.PI/2)
-            ]
+            size: 1
           }
-        }, {
+        }
+        ,{
           type: ParticleSaga.ImageTarget,
-          url: './images/saga.png',
+          url: './images/4.png',
           options: {
-            respondsToMouse: true,
-            size: 2
-          }
-        }, {
-          type: ParticleSaga.MultiTarget,
-          container: document.getElementById('multitarget-references'),
-          options: {
-            size: 3,
-            respondsToMouse: true
-          },
-          targets: [
-            {
-              type: ParticleSaga.ModelTarget,
-              url: './models/helmet.json',
-              container: document.getElementById('multitarget-reference-1'),
-              options: {
-                scale: 40,
-                color: {
-                  r: 0.8,
-                  g: 1,
-                  b: 1
-                },
-                initialMatrices: [
-                  new THREE.Matrix4().makeTranslation(0.1, -0.4, 0)
-                ]
-              }
+            color: {
+              r: 0.8,
+              g: 1,
+              b: 0.5
             },
-            {
-              type: ParticleSaga.ModelTarget,
-              url: './models/gryphon.json',
-              container: document.getElementById('multitarget-reference-2'),
-              options: {
-                scale: 60,
-                color: {
-                  r: 0.8,
-                  g: 1,
-                  b: 0.2
-                },
-                initialMatrices: [
-                  new THREE.Matrix4().makeTranslation(0,-2, 0),
-                  new THREE.Matrix4().makeRotationY(Math.PI/2)
-                ]
-              }
-            }, {
-              type: ParticleSaga.ImageTarget,
-              url: './images/saga.png',
-              container: document.getElementById('multitarget-reference-3')
-            }, {
-              type: ParticleSaga.ImageTarget,
-              url: './images/griffin.png',
-              container: document.getElementById('multitarget-reference-4')
-            }
-          ]
+            respondsToMouse: true,
+            size: 1
+          }
+        }
+        ,{
+          type: ParticleSaga.ImageTarget,
+          url: './images/5.png',
+          options: {
+            color: {
+              r: 0.8,
+              g: 1,
+              b: 1
+            },
+            respondsToMouse: true,
+            size: 1
+          }
+        }
+        ,{
+          type: ParticleSaga.ImageTarget,
+          url: './images/6.png',
+          options: {
+            color: {
+              r: 1,
+              g: 1,
+              b: 1
+            },
+            respondsToMouse: true,
+            size: 1
+          }
         }
       ];
 
